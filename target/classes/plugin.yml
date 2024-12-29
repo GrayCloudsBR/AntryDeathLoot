@@ -1,0 +1,4 @@
+name: AntryDeathLoot
+version: '1.0-SNAPSHOT'
+main: dev.antry.antrydeathloot.AntryDeathLoot
+depend: [ProtocolLib]

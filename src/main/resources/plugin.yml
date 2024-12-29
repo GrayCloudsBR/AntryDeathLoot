@@ -1,0 +1,4 @@
+name: AntryDeathLoot
+version: '${project.version}'
+main: dev.antry.antrydeathloot.AntryDeathLoot
+depend: [ProtocolLib]
