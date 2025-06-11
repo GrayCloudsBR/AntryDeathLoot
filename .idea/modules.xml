@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AntryDeathLoot.iml" filepath="$PROJECT_DIR$/AntryDeathLoot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/AntryDeathLoot.iml" filepath="$PROJECT_DIR$/.idea/AntryDeathLoot.iml" />
     </modules>
   </component>
 </project>
