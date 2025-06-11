@@ -1,0 +1,93 @@
+package dev.antry.antrydeathloot.config;
+
+import lombok.Builder;
+import lombok.Data;
+import lombok.NonNull;
+import org.bukkit.Sound;
+import org.bukkit.configuration.file.FileConfiguration;
+
+import java.util.logging.Logger;
+
+/**
+ * Immutable configuration class using Lombok
+ */
+@Data
+@Builder
+public class PluginConfig {
+    @NonNull
+    private final String prefix;
+    
+    private final int chestBreakTime;
+    private final boolean allowInstantBreak;
+    private final boolean announceDeathChest;
+    
+    @NonNull
+    private final String deathChestMessage;
+    
+    private final String chestBreakMessage;
+    private final Sound chestBreakSound;
+    
+    // Falling chest settings
+    private final boolean fallingChestEnabled;
+    private final int fallingChestHeight;
+    
+    // Hologram settings
+    private final boolean hologramEnabled;
+    private final double hologramHeight;
+    private final double hologramLineSpacing;
+    
+    @NonNull
+    private final String hologramFirstLine;
+    
+    @NonNull
+    private final String hologramSecondLine;
+    
+    /**
+     * Load configuration from Bukkit FileConfiguration
+     * @param config the file configuration
+     * @param logger the logger for warnings
+     * @return PluginConfig instance
+     */
+    public static PluginConfig fromFileConfiguration(@NonNull FileConfiguration config, Logger logger) {
+        PluginConfigBuilder builder = PluginConfig.builder()
+            .prefix(config.getString("prefix", "&f&l[&3&lAntryDeathLoot&f&l] "))
+            .chestBreakTime(config.getInt("chest-break-time", 10))
+            .allowInstantBreak(config.getBoolean("allow-instant-break", true))
+            .announceDeathChest(config.getBoolean("announce-death-chest", true))
+            .deathChestMessage(config.getString("death-chest-message", "&c%player%'s death chest has been created! It will break in %time% seconds!"))
+            .chestBreakMessage(config.getString("chest-break-message", "&cDeath chest is breaking!"))
+            .fallingChestEnabled(config.getBoolean("falling-chest.enabled", true))
+            .fallingChestHeight(config.getInt("falling-chest.height", 20))
+            .hologramEnabled(config.getBoolean("hologram.enabled", true))
+            .hologramHeight(config.getDouble("hologram.height", 1.0))
+            .hologramLineSpacing(config.getDouble("hologram.line-spacing", 0.3))
+            .hologramFirstLine(config.getString("hologram.first-line", "&7%player%'s &fLoot"))
+            .hologramSecondLine(config.getString("hologram.second-line", "&fTime remaining: &c%seconds%s"));
+        
+        // Handle sound configuration
+        String soundName = config.getString("chest-break-sound", "CHEST_CLOSE");
+        if (soundName != null && !soundName.equalsIgnoreCase("NONE")) {
+            try {
+                builder.chestBreakSound(Sound.valueOf(soundName));
+            } catch (IllegalArgumentException e) {
+                if (logger != null) {
+                    logger.warning("Invalid sound in config: " + soundName + ", using default");
+                }
+                builder.chestBreakSound(Sound.CHEST_CLOSE);
+            }
+        }
+        
+        return builder.build();
+    }
+    
+    /**
+     * Check if the configuration is valid
+     * @return true if valid
+     */
+    public boolean isValid() {
+        return chestBreakTime > 0 && 
+               hologramHeight >= 0 && 
+               hologramLineSpacing >= 0 && 
+               fallingChestHeight > 0;
+    }
+} 

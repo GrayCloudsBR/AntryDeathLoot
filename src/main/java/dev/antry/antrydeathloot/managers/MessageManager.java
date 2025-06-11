@@ -1,40 +1,77 @@
 package dev.antry.antrydeathloot.managers;
 
 import dev.antry.antrydeathloot.AntryDeathLoot;
+import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+@Log
 public class MessageManager {
     private static AntryDeathLoot plugin;
 
     public static void initialize(AntryDeathLoot main) {
         plugin = main;
+        log.info("MessageManager initialized");
     }
 
     private static String getPrefix() {
-        return ChatColor.translateAlternateColorCodes('&', 
-            plugin.getConfig().getString("prefix", "&f&l[&3&lAntryDeathLoot&f&l] "));
+        if (plugin == null || plugin.getPluginConfig() == null) {
+            return "[AntryDeathLoot] ";
+        }
+        return ChatColor.translateAlternateColorCodes('&', plugin.getPluginConfig().getPrefix());
     }
 
     public static void sendDeathChestMessage(Player player) {
-        if (plugin.getConfig().getBoolean("announce-death-chest")) {
-            String message = plugin.getConfig().getString("death-chest-message", "&c%player%'s death chest has been created!");
-            message = message.replace("%player%", player.getName())
-                           .replace("%time%", String.valueOf(plugin.getConfig().getInt("chest-break-time", 10)));
-            broadcast(message);
+        if (plugin == null || player == null || plugin.getPluginConfig() == null) {
+            return;
+        }
+        
+        try {
+            if (plugin.getPluginConfig().isAnnounceDeathChest()) {
+                String message = plugin.getPluginConfig().getDeathChestMessage()
+                    .replace("%player%", player.getName())
+                    .replace("%time%", String.valueOf(plugin.getPluginConfig().getChestBreakTime()));
+                broadcast(message);
+            }
+        } catch (Exception e) {
+            log.warning("Error sending death chest message: " + e.getMessage());
         }
     }
 
     public static void sendBreakMessage() {
-        String breakMessage = plugin.getConfig().getString("chest-break-message");
-        if (breakMessage != null && !breakMessage.isEmpty()) {
-            broadcast(breakMessage);
+        if (plugin == null || plugin.getPluginConfig() == null) {
+            return;
+        }
+        
+        try {
+            String breakMessage = plugin.getPluginConfig().getChestBreakMessage();
+            if (breakMessage != null && !breakMessage.isEmpty()) {
+                broadcast(breakMessage);
+            }
+        } catch (Exception e) {
+            log.warning("Error sending break message: " + e.getMessage());
         }
     }
 
     private static void broadcast(String message) {
-        message = getPrefix() + ChatColor.translateAlternateColorCodes('&', message);
-        Bukkit.broadcastMessage(message);
+        if (message == null || message.isEmpty()) {
+            return;
+        }
+        
+        try {
+            message = getPrefix() + ChatColor.translateAlternateColorCodes('&', message);
+            Bukkit.broadcastMessage(message);
+        } catch (Exception e) {
+            log.warning("Error broadcasting message: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Clean up the message manager
+     */
+    public static void cleanup() {
+        log.info("MessageManager cleanup completed");
+        plugin = null;
     }
 } 
