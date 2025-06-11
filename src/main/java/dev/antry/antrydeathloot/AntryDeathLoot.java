@@ -4,6 +4,7 @@ import dev.antry.antrydeathloot.config.PluginConfig;
 import dev.antry.antrydeathloot.managers.DeathChestManager;
 import dev.antry.antrydeathloot.managers.MessageManager;
 import dev.antry.antrydeathloot.managers.HologramManager;
+import dev.antry.antrydeathloot.utils.VersionUtils;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import org.bukkit.Material;
@@ -35,6 +36,9 @@ public final class AntryDeathLoot extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         try {
+            // Log version compatibility information
+            VersionUtils.logVersionInfo();
+            
             // Save default config
             saveDefaultConfig();
             

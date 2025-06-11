@@ -1,6 +1,7 @@
 package dev.antry.antrydeathloot.managers;
 
 import dev.antry.antrydeathloot.AntryDeathLoot;
+import dev.antry.antrydeathloot.utils.VersionUtils;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
@@ -78,31 +79,37 @@ public class DeathChestManager {
         int fallHeight = plugin.getPluginConfig().getFallingChestHeight();
         Location fallLocation = location.clone().add(0, fallHeight, 0);
         
-        // Create falling block
-        FallingBlock fallingChest = fallLocation.getWorld().spawnFallingBlock(fallLocation, Material.CHEST, (byte) 0);
-        fallingChest.setDropItem(false);
-        
-        // Monitor when it lands and create the actual chest
-        Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
-            int ticks = 0;
+        // Create falling block using version-compatible method
+        FallingBlock fallingChest = VersionUtils.spawnFallingBlock(fallLocation, Material.CHEST);
+        if (fallingChest != null) {
+            fallingChest.setDropItem(false);
             
-            @Override
-            public void run() {
-                ticks++;
+            // Monitor when it lands and create the actual chest
+            Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+                int ticks = 0;
                 
-                // Safety check - cancel after 10 seconds
-                if (ticks > 200 || fallingChest.isDead() || !fallingChest.isValid()) {
-                    createStaticChest(location, player, items);
-                    return;
+                @Override
+                public void run() {
+                    ticks++;
+                    
+                    // Safety check - cancel after 10 seconds
+                    if (ticks > 200 || fallingChest.isDead() || !fallingChest.isValid()) {
+                        createStaticChest(location, player, items);
+                        return;
+                    }
+                    
+                    // Check if it landed
+                    if (fallingChest.isOnGround() || Math.abs(fallingChest.getLocation().getY() - location.getY()) < 1) {
+                        fallingChest.remove();
+                        createStaticChest(location, player, items);
+                    }
                 }
-                
-                // Check if it landed
-                if (fallingChest.isOnGround() || Math.abs(fallingChest.getLocation().getY() - location.getY()) < 1) {
-                    fallingChest.remove();
-                    createStaticChest(location, player, items);
-                }
-            }
-        }, 1L, 1L);
+            }, 1L, 1L);
+        } else {
+            // If falling block creation failed, create static chest directly
+            log.warning("Failed to create falling chest, creating static chest instead");
+            createStaticChest(location, player, items);
+        }
     }
     
     private void createStaticChest(Location location, Player player, List<ItemStack> items) {
@@ -311,12 +318,13 @@ public class DeathChestManager {
     }
 
     private void playBreakSound(Location location) {
-        if (location == null || location.getWorld() == null || plugin.getPluginConfig() == null) {
+        if (location == null || location.getWorld() == null) {
             return;
         }
         
         try {
-            Sound sound = plugin.getPluginConfig().getChestBreakSound();
+            // Use version-compatible break sound
+            Sound sound = VersionUtils.getBlockBreakSound();
             if (sound != null) {
                 location.getWorld().playSound(location, sound, 1.0f, 1.0f);
             }

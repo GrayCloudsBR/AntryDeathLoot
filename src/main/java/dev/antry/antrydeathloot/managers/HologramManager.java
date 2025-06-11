@@ -1,6 +1,7 @@
 package dev.antry.antrydeathloot.managers;
 
 import dev.antry.antrydeathloot.AntryDeathLoot;
+import dev.antry.antrydeathloot.utils.VersionUtils;
 import lombok.extern.java.Log;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -26,6 +27,12 @@ public class HologramManager {
         List<ArmorStand> hologramLines = new ArrayList<>();
         
         if (plugin == null || plugin.getPluginConfig() == null || !plugin.getPluginConfig().isHologramEnabled()) {
+            return hologramLines;
+        }
+        
+        // Check if ArmorStands are supported (not available in 1.7.10)
+        if (!VersionUtils.supportsFeature("armor_stands")) {
+            log.info("Holograms are not supported in Minecraft 1.7.10 - ArmorStands were added in 1.8");
             return hologramLines;
         }
         

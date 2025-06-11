@@ -29,7 +29,7 @@
             <path>
               <groupId>org.projectlombok</groupId>
               <artifactId>lombok</artifactId>
-              <version>1.18.24</version>
+              <version>1.18.30</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
@@ -72,22 +72,24 @@
   </repositories>
 
   <dependencies>
+      <!-- Using 1.8.8 API for better compatibility with 1.7.10 -->
       <dependency>
           <groupId>org.spigotmc</groupId>
           <artifactId>spigot-api</artifactId>
           <version>1.8.8-R0.1-SNAPSHOT</version>
           <scope>provided</scope>
       </dependency>
+      <!-- Using older ProtocolLib version for 1.7.10 compatibility -->
       <dependency>
           <groupId>com.comphenix.protocol</groupId>
           <artifactId>ProtocolLib</artifactId>
-          <version>4.7.0</version>
+          <version>4.8.0</version>
           <scope>provided</scope>
       </dependency>
       <dependency>
           <groupId>org.projectlombok</groupId>
           <artifactId>lombok</artifactId>
-          <version>1.18.24</version>
+          <version>1.18.30</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>

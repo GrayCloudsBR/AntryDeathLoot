@@ -2,3 +2,6 @@ name: AntryDeathLoot
 version: '${project.version}'
 main: dev.antry.antrydeathloot.AntryDeathLoot
 depend: [ProtocolLib]
+author: Antry
+description: A plugin that creates death chests when players die
+website: https://github.com/yourusername/AntryDeathLoot

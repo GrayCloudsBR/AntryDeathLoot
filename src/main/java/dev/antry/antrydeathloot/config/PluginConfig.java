@@ -3,7 +3,6 @@ package dev.antry.antrydeathloot.config;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
-import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.logging.Logger;
@@ -25,7 +24,6 @@ public class PluginConfig {
     private final String deathChestMessage;
     
     private final String chestBreakMessage;
-    private final Sound chestBreakSound;
     
     // Falling chest settings
     private final boolean fallingChestEnabled;
@@ -64,18 +62,7 @@ public class PluginConfig {
             .hologramFirstLine(config.getString("hologram.first-line", "&7%player%'s &fLoot"))
             .hologramSecondLine(config.getString("hologram.second-line", "&fTime remaining: &c%seconds%s"));
         
-        // Handle sound configuration
-        String soundName = config.getString("chest-break-sound", "CHEST_CLOSE");
-        if (soundName != null && !soundName.equalsIgnoreCase("NONE")) {
-            try {
-                builder.chestBreakSound(Sound.valueOf(soundName));
-            } catch (IllegalArgumentException e) {
-                if (logger != null) {
-                    logger.warning("Invalid sound in config: " + soundName + ", using default");
-                }
-                builder.chestBreakSound(Sound.CHEST_CLOSE);
-            }
-        }
+        // Sound handling is now done through VersionUtils, no configuration needed
         
         return builder.build();
     }
